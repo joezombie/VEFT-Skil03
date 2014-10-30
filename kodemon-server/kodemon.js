@@ -1,6 +1,7 @@
 var dgram = require("dgram"),
 	mongoose = require('mongoose'),
-	Message = require('./models').Message;
+	Message = require('./models').Message,
+	express = require('express');
 
 
 var server = dgram.createSocket("udp4");
@@ -20,10 +21,12 @@ server.on("message", function(msg, rinfo){
 });
 
 server.on('listening', function(){
-  	console.log('Kodemon server listening on')
+  	console.log('Kodemon server listening on');
   	console.log('hostname: ' + server.address().address);
   	console.log('port: ' + server.address().port);
 });
+
+server.bind(4000)
 
 function connectMongo(){ 
   mongoose.connect('mongodb://localhost/kodemon', {keepAlive: 1});
@@ -34,4 +37,18 @@ mongoose.connection.on('disconnected', connectMongo);
 
 connectMongo();
 
-server.bind(4000)
+app = express();
+
+app.get('/messages', function(req, res){
+	Message.find({}, function(err, messages){
+		if(err){
+			res.status(503).send('Unable to fetch messages');
+		} else  {
+			res.json(messages);
+		}
+	})
+});
+
+app.listen(4001, function(){
+	console.log('REST API ready');
+});

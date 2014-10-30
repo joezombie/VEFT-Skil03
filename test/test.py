@@ -7,9 +7,16 @@ def test():
 	print 'Test Sleeping for', sleepFor
 	time.sleep(sleepFor)
 
+@kodemon
+def test2():
+	sleepFor = random.random()
+	print 'Test2 Sleeping for', sleepFor
+	time.sleep(sleepFor)
+
 def main():
 	while(1):
 		test()
+		test2()
 
 
 if __name__ == '__main__':
