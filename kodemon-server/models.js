@@ -1,4 +1,9 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    elasticsearch = require('elasticsearch');
+
+var client = new elasticsearch.Client({
+    host: 'localhost:9200'
+});
 
 
 var setTags = function(tags){
@@ -21,8 +26,18 @@ messageSchema.pre('save', function(next){
 });
 
 messageSchema.post('save', function(b) {
-
+    client.index({
+        index: b.key,
+        type: 'message',
+        id: String(b._id),
+        body: b},
+        function(error, response) {
+            console.log(error);
+            console.log(response);
+    });
 });
+
+
 
 
 var Message = mongoose.model('Message', messageSchema);
