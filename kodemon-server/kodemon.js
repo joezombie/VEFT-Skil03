@@ -44,6 +44,10 @@ connectMongo();
 
 app = express();
 
+app.use('/', express.static('./public'));
+app.use('/css/', express.static('./public/css'));
+app.use('/js/', express.static('./public/js'));
+
 app.get('/api/v1/messages', function(req, res){
     Message.find({}, function(err, messages){
         if(err){
