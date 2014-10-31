@@ -125,6 +125,34 @@ app.get('/api/v1/keys', function(req, res){
     );       
 });
 
+app.post('/api/v1/keys/messages', function(req, res){
+    
+    var key = req.body.key;    
+    console.log('key:' + key);    
+
+    var count;
+    elClient.count({
+        "index" : key,        
+        "query" : {                 
+            "key" : key        
+        }
+        }, function (error, response) {
+            count = response.count;
+            
+            elClient.search({  
+                "size" : count,      
+                "index" : key,        
+                "query" : {                 
+                    "key" : key        
+                }
+            }, function(err, response){
+                console.log(err);            
+                res.json(response);
+                });
+             });
+    
+});
+
 app.listen(4001, function(){
     console.log('REST API ready');
 });
