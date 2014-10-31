@@ -27,18 +27,36 @@
     <div class="row">
       <div class="col-md-2 col-md-offset-1">
         <div ng-controller='MenuCtrl'>
-          <accordion close-others="oneAtATime">
-            <accordion-group heading="{{group.title}}" ng-repeat="group in groups">
-            {{group.content}}
-            </accordion-group>
-          </accordion>
+          <ul class="nav nav-pills nav-stacked" role="tablist" ng-repeat="item in navItems">
+           <li role="presentation"><a ng-click="setKey(item.key)">{{item.key}}</a></li>
+          </ul>
         </div>
       </div>
       <div class="col-md-8">
         <div ng-controller='ViewCtrl'>
-        <input type="text" ng-model="key">
-        <h1>{{key}}</h1>
-        </div>  
+          <tabset>
+            <tab heading="Graph">
+              <h1>Graph</h1>
+            </tab>
+            <tab heading="Table" select="alertMe()">
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <th>Token</th>
+                    <th>Execution time</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody ng-repeat="message in messages">
+                  <tr>
+                    <td>{{message.token}}</td>
+                    <td>{{message.execution_time}}</td>
+                    <td>{{message.timestamp}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </tab>
+          </tabset>
       </div>
     </div>
   </div>

@@ -6,26 +6,71 @@ var myApp = angular.module('myApp', [
   'ui.bootstrap'
 ]);
 
+myApp.controller('MenuCtrl', ['$scope', '$http', 'messageService',  function($scope, $http, messageService) {
+	$scope.navItems = [];
 
-function MenuCtrl($scope, $http){
-	//$http.get();
-	$scope.oneAtATime = true;
+	$scope.groups = [];
 
-  $scope.groups = [
-    {
-      title: 'test.py-test',
-      content: '<button class="btn btn-default btn-sm" ng-click="addItem()">Add Item</button>'
-    },
-    {
-      title: 'test.py-test2',
-      content: 'Dynamic Group Body - 2'
-    }
-  ];
-}
+	$http.get('http://localhost:4001/api/v1/keys').
+		success(function(data, status, headers, config) {	
+			angular.forEach(data, function(value, key) {
+			  this.push({
+					key: value.index
+				});	
+			}, $scope.navItems);
+		}).
+		error(function(data, status, headers, config) {
+		  // log error
+		});
 
-function ViewCtrl($scope){
-	$scope.key = 'View';
-}
+	$scope.setKey = messageService.setKey;
+	
+
+	$scope.oneAtATime = true; 
+}]);
+
+
+
+myApp.controller('ViewCtrl', ['$scope', '$http', 'messageService',
+	function($scope, $http, messageService){
+		$scope.messages = messageService.messages;
+	}
+]);
+
+myApp.service('messageService', function($http){
+	var key = '';
+	var messages = [];
+	
+	var setKey = function(newKey){
+		console.log('Setting key as', newKey);
+		key = newKey;
+		fetchMessages();
+	};
+
+	var getKey = function(){
+		return key;
+	};
+
+	var fetchMessages = function(){
+		console.log('Getting messages');
+		$http.get('http://localhost:4001/api/v1/key/' + key).
+		success(function(data, status, headers, config) {	
+			angular.forEach(data, function(value, key) {
+			  	this.push(value);	
+			}, messages);
+		}).
+		error(function(data, status, headers, config) {
+		  console.log('Could not fetch messages');
+		});	
+	};
+
+	return {
+		fetchMessages: fetchMessages,
+		setKey: setKey,
+		getKey: getKey,
+		messages: messages
+	};
+});
 
 
 

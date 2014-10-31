@@ -1,7 +1,7 @@
 {
   "name": "kodemon-server",
   "version": "0.0.0",
-  "description": "",
+  "description": "ERROR: No README data found!",
   "main": "kodemon.js",
   "dependencies": {
     "body-parser": "~1.9.2",

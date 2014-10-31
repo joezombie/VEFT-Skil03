@@ -45,10 +45,15 @@ connectMongo();
 
 app = express();
 app.use( bodyParser.json() );
-
 app.use('/', express.static('./public'));
 app.use('/css/', express.static('./public/css'));
 app.use('/js/', express.static('./public/js'));
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.get('/api/v1/messages', function(req, res){
     Message.find({}, function(err, messages){
@@ -112,7 +117,6 @@ app.post('/api/v1/key/bytime', function(req, res){
 
 
 app.get('/api/v1/keys', function(req, res){  
-
     elClient.cat.indices({format:'json'},
         function(err, response){
             console.log(err);
