@@ -107,15 +107,18 @@ app.post('/api/v1/key/bytime', function(req, res){
             console.log(err);
             res.json(response);
     });
+});
 
-  /*   Message.find(key, function(err, messages){
-        if(err){
-            res.status(503).send('Unable to fetch messages');
-        } else  {
-            res.json(messages);
+
+
+app.get('/api/v1/keys', function(req, res){  
+
+    elClient.cat.indices({format:'json'},
+        function(err, response){
+            console.log(err);
+            res.json(response);
         }
-    })
-*/
+    );       
 });
 
 app.listen(4001, function(){
