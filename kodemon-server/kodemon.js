@@ -92,14 +92,30 @@ app.post('/api/v1/key/bytime', function(req, res){
     console.log('search_to: ' + search_to);
     console.log('key:' + key);
     
-     Message.find(key, function(err, messages){
+
+    elClient.search({
+        "index" : key,
+        "query" : {            
+            "range" : {
+                "timestamp" : {
+                    "from" : search_from,
+                    "to" : search_to
+                }
+            }
+        }
+    }, function(err, response){
+            console.log(err);
+            res.json(response);
+    });
+
+  /*   Message.find(key, function(err, messages){
         if(err){
             res.status(503).send('Unable to fetch messages');
         } else  {
             res.json(messages);
         }
     })
-
+*/
 });
 
 app.listen(4001, function(){
