@@ -34,11 +34,12 @@ myApp.controller('MenuCtrl', ['$scope', '$http', 'messageService',  function($sc
 myApp.controller('ViewCtrl', ['$scope', '$http', 'messageService',
 	function($scope, $http, messageService){
 		$scope.messages = messageService.messages;
+		$scope.key = messageService.key;
 	}
 ]);
 
 myApp.service('messageService', function($http){
-	var key = '';
+	var key = 'No Key';
 	var messages = [];
 	
 	var setKey = function(newKey){
@@ -68,7 +69,8 @@ myApp.service('messageService', function($http){
 		fetchMessages: fetchMessages,
 		setKey: setKey,
 		getKey: getKey,
-		messages: messages
+		messages: messages,
+		key: key
 	};
 });
 
