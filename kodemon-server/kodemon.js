@@ -2,6 +2,7 @@ var dgram = require("dgram"),
     mongoose = require('mongoose'),
     Message = require('./models').Message,
     express = require('express'),
+    bodyParser = require('body-parser'),
     elasticsearch = require('elasticsearch');
 
 
@@ -43,6 +44,7 @@ var elClient = new elasticsearch.Client({
 connectMongo();
 
 app = express();
+app.use( bodyParser.json() );
 
 app.get('/api/v1/messages', function(req, res){
     Message.find({}, function(err, messages){
@@ -66,6 +68,34 @@ app.get('/api/v1/key/:key', function(req, res){
             res.json(b);
         }
     });
+});
+
+// API: http://localhost:4001/api/v1/key/bytime
+// return records for given keyvalue in time range provided in body
+// BODY: 
+// {      
+//       "from": "2014-10-30T20:08:07.000Z",
+//       "to": "2014-10-30T20:08:07.000Z",
+//       "key": "test.py-test"
+//   }
+app.post('/api/v1/key/bytime', function(req, res){
+    
+    var search_from = req.body.from || "";
+    var search_to   = req.body.to || "";
+    var key         = req.body.key || "";
+    
+    console.log('search_from: ' + search_from);
+    console.log('search_to: ' + search_to);
+    console.log('key:' + key);
+    
+     Message.find(key, function(err, messages){
+        if(err){
+            res.status(503).send('Unable to fetch messages');
+        } else  {
+            res.json(messages);
+        }
+    })
+
 });
 
 app.listen(4001, function(){
