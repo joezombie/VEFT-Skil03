@@ -1,12 +1,31 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('myApp', [
+var myApp = angular.module('myApp', [
   'ngRoute',
-  'myApp.view1',
-  'myApp.view2',
-  'myApp.version'
-]).
-config(['$routeProvider', function($routeProvider) {
-  $routeProvider.otherwise({redirectTo: '/view1'});
-}]);
+  'ui.bootstrap'
+]);
+
+
+function MenuCtrl($scope, $http){
+	//$http.get();
+	$scope.oneAtATime = true;
+
+  $scope.groups = [
+    {
+      title: 'test.py-test',
+      content: '<button class="btn btn-default btn-sm" ng-click="addItem()">Add Item</button>'
+    },
+    {
+      title: 'test.py-test2',
+      content: 'Dynamic Group Body - 2'
+    }
+  ];
+}
+
+function ViewCtrl($scope){
+	$scope.key = 'View';
+}
+
+
+
