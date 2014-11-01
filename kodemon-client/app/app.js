@@ -55,9 +55,7 @@ myApp.controller('TableCtrl', ['$scope', 'messageService',
 myApp.controller('FilterCtrl', ['$scope', 'messageService',
 	function($scope, messageService){
 		$scope.data = messageService.data;
-		$scope.filter = function(){
-			console.log(JSON.stringify($scope.data.dateFrom), $scope.data.dateTo);
-		}
+		$scope.filter = messageService.filter;
 	}
 ]);
 
@@ -65,13 +63,13 @@ myApp.service('messageService', function($http){
 	var data = {
 		key: 'No Key', 
 		messages: [],
-		messagesSubSet: [],
 		totalMessages: 0,
-		totalMessagesSubSet: 100,
+		messagesTake: 100,
+		messagesFrom: 0,
 		currentPage: 1,
 		dateFrom: '',
 		dateTo: ''};
-	
+
 	var setKey = function(newKey){
 		console.log('Setting key as', newKey);
 		data.key = newKey;
@@ -83,13 +81,44 @@ myApp.service('messageService', function($http){
 		return data.key;
 	};
 
+	var filter = function(){
+		console.log('Getting messages');
+		$http.post('http://localhost:4001/api/v1/key/bytime',
+			{
+				from: data.dateFrom,
+				to: data.dateTo,
+				key: data.key
+			}).
+		success(function(apiData, status, headers, config) {
+			if(status = 200){	
+				data.messages = apiData;
+				data.messagesSubSet = data.messages.slice(0, 100);
+				data.totalMessages = data.messages.length;
+				console.log('Got messages');
+			}else {
+				console.log(data);
+			}
+		}).
+		error(function(data, status, headers, config) {
+		  console.log('Could not fetch messages');
+		});	
+	};
+
 	var fetchMessages = function(){
 		console.log('Getting messages');
-		$http.get('http://localhost:4001/api/v1/key/' + data.key).
+
+		$http.get('http://localhost:4001/api/v1/key/' + data.key + '/count').
+		success(function(apiData, status, headers, config) {	
+			data.totalMessages = apiData;
+			console.log('Got count');
+		}).
+		error(function(data, status, headers, config) {
+		  console.log('Could not fetch messages');
+		});	
+		
+		$http.get('http://localhost:4001/api/v1/key/' + data.key + '/from/' + data.messagesFrom + '/take/' + data.messagesTake).
 		success(function(apiData, status, headers, config) {	
 			data.messages = apiData;
-			data.messagesSubSet = data.messages.slice(0, 100);
-			data.totalMessages = data.messages.length;
 			console.log('Got messages');
 		}).
 		error(function(data, status, headers, config) {
@@ -98,9 +127,8 @@ myApp.service('messageService', function($http){
 	};
 
 	var pageChanged = function(){
-		data.messagesSubSet = data.messages.slice(
-			(data.currentPage - 1) * data.totalMessagesSubSet, 
-			data.currentPage * data.totalMessagesSubSet);
+		data.messagesFrom = (data.currentPage - 1) * data.messagesTake;
+		fetchMessages();
 	}
 
 	return {
@@ -108,6 +136,7 @@ myApp.service('messageService', function($http){
 		setKey: setKey,
 		getKey: getKey,
 		pageChanged: pageChanged,
+		filter: filter,
 		data: data
 	};
 });

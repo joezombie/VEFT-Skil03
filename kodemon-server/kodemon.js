@@ -86,6 +86,50 @@ app.get('/api/v1/key/:key', function(req, res){
     });
 });
 
+app.get('/api/v1/key/:key/from/:from/take/:take', function(req, res){
+    var key = req.params.key;
+    var from = parseInt(req.params.from);
+    var take = parseInt(req.params.take);
+
+    if(isNaN(from) || isNaN(take)){
+        res.status(400).send('Incorrect request');
+    } else {
+        elClient.search({
+            "index" : key,
+            "size" : take,
+            "from" : from,
+            "query" : {}
+        }, function(err, response){
+            if(err){
+                res.status(500).send('Something went wrong');
+                console.log(err);
+            }else {                   
+                responseArr = [];
+                for (var i = 0, len = response.hits.hits.length; i < len; i++) {
+                    responseArr.push(response.hits.hits[i]._source);
+                }
+                res.json(responseArr);  
+            }
+        });
+        
+    }
+});
+
+app.get('/api/v1/key/:key/count', function(req, res){
+    var key = req.params.key;
+
+    elClient.count({
+        "index" : key
+    }, function(err, response){
+        if(err){
+            res.status(500).send('Something went wrong');
+            console.log(err);
+        }else {  
+            res.json(response.count);   
+        }   
+    });
+});
+
 app.get('/api/v1/key/:key/getlast/:lastNr', function(req, res){
     var key = req.params.key;
     var lastNr = parseInt(req.params.lastNr);
@@ -145,8 +189,16 @@ app.post('/api/v1/key/bytime', function(req, res){
             }
         }
     }, function(err, response){
+        if(err){
+            res.status(500).send('Something went wrong');
             console.log(err);
-            res.json(response);
+        }else {                   
+            responseArr = [];
+            for (var i = 0, len = response.hits.hits.length; i < len; i++) {
+                responseArr.push(response.hits.hits[i]._source);
+            }
+            res.json(responseArr);  
+        }
     });
 });
 
