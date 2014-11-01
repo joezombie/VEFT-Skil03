@@ -44,20 +44,38 @@ myApp.controller('MenuCtrl', ['$scope', '$http', 'messageService',  function($sc
 
 
 
-myApp.controller('ViewCtrl', ['$scope', '$http', 'messageService',
-	function($scope, $http, messageService){
-		$scope.messages = messageService.data.messages;
-		$scope.key = messageService.data.key;
+myApp.controller('TableCtrl', ['$scope', 'messageService',
+	function($scope, messageService){
+		$scope.maxSize = 10;
 		$scope.data = messageService.data;
+		$scope.pageChanged = messageService.pageChanged;
+	}
+]);
+
+myApp.controller('FilterCtrl', ['$scope', 'messageService',
+	function($scope, messageService){
+		$scope.data = messageService.data;
+		$scope.filter = function(){
+			console.log(JSON.stringify($scope.data.dateFrom), $scope.data.dateTo);
+		}
 	}
 ]);
 
 myApp.service('messageService', function($http){
-	var data = {key: 'No Key', messages: []};
+	var data = {
+		key: 'No Key', 
+		messages: [],
+		messagesSubSet: [],
+		totalMessages: 0,
+		totalMessagesSubSet: 100,
+		currentPage: 1,
+		dateFrom: '',
+		dateTo: ''};
 	
 	var setKey = function(newKey){
 		console.log('Setting key as', newKey);
 		data.key = newKey;
+		data.currentPage = 1;
 		fetchMessages();
 	};
 
@@ -70,6 +88,8 @@ myApp.service('messageService', function($http){
 		$http.get('http://localhost:4001/api/v1/key/' + data.key).
 		success(function(apiData, status, headers, config) {	
 			data.messages = apiData;
+			data.messagesSubSet = data.messages.slice(0, 100);
+			data.totalMessages = data.messages.length;
 			console.log('Got messages');
 		}).
 		error(function(data, status, headers, config) {
@@ -77,10 +97,17 @@ myApp.service('messageService', function($http){
 		});	
 	};
 
+	var pageChanged = function(){
+		data.messagesSubSet = data.messages.slice(
+			(data.currentPage - 1) * data.totalMessagesSubSet, 
+			data.currentPage * data.totalMessagesSubSet);
+	}
+
 	return {
 		fetchMessages: fetchMessages,
 		setKey: setKey,
 		getKey: getKey,
+		pageChanged: pageChanged,
 		data: data
 	};
 });

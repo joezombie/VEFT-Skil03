@@ -23,23 +23,67 @@
   <![endif]-->
 
   <div class="container-fluid">
-    <div class="row"></div>
     <div class="row">
-      <div class="col-md-2 col-md-offset-1 col-xs-3">
-        <div ng-controller='MenuCtrl'>
-          <ul class="nav nav-pills nav-stacked" role="tablist" ng-repeat="item in navItems">
-           <li role="presentation" class="{{item.classes}}"><a ng-click="setKey(item.key)">{{item.key}}</a></li>
-          </ul>
+    <pre>Kodemon</pre>
+    </div>
+    <div class="row">
+        <div class="col-md-2 col-md-offset-1 col-xs-3">
+          <div ng-controller='MenuCtrl'>
+            <ul class="nav nav-pills nav-stacked" role="tablist" >
+             <li role="presentation" ng-repeat="item in navItems" class="{{item.classes}}"><a ng-click="setKey(item.key)">{{item.key}}</a></li>
+            </ul>
+          </div>
         </div>
-      </div>
       <div class="col-md-8 col-xs-9">
-        <div ng-controller='ViewCtrl'>
-          <tabset>
-            <tab heading="Graph">
-              <h1>Graph</h1>
-            </tab>
-            <tab heading="Table">
+        <form name="dateFilter" ng-controller="FilterCtrl" class="form-inline" role="form">
+          <div class="form-group">
+            <label for="dateFrom">From: </label>
+            <input 
+              type="datetime-local" 
+              class="form-control"
+              id="dateFrom" 
+              name="dateFrom" 
+              ng-model="data.dateFrom"
+              placeholder="yyyy-MM-ddTHH:mm:ss" 
+              required />
+          </div>
+          <div class="form-group">
+            <label for="dateTo">To: </label>
+            <input 
+              type="datetime-local" 
+              class="form-control"
+              id="dateTo" 
+              name="dateTo" 
+              ng-model="data.dateTo"
+              placeholder="yyyy-MM-ddTHH:mm:ss" 
+              required />
+          </div>
+          <div class="form-group">
+            <button 
+              type="button" 
+              class="btn btn-primary" 
+              ng-click="filter()">
+              Filter
+            </button>
+          </div>
+        </form>
+        <tabset>
+          <tab heading="Graph">
+            <h1>Graph</h1>
+          </tab>
+          <tab heading="Table">
+            <div ng-controller='TableCtrl'>
               <h1>{{data.key}}</h1>
+              <pagination 
+                direction-links="false" 
+                boundary-links="true" 
+                total-items="data.totalMessages" 
+                items-per-page="data.totalMessagesSubSet" 
+                max-size="maxSize"
+                ng-change="pageChanged()"
+                num-pages="numPages"
+                ng-model="data.currentPage">
+              </pagination>
               <table class="table table-condensed">
                 <thead>
                   <tr>
@@ -48,17 +92,17 @@
                     <th>Timestamp</th>
                   </tr>
                 </thead>
-                <tbody ng-repeat="message in data.messages">
-                  <tr>
+                <tbody>
+                  <tr ng-repeat="message in data.messagesSubSet">
                     <td>{{message.token}}</td>
                     <td>{{message.execution_time}}</td>
-                    <td>{{message.timestamp}}</td>
+                    <td>{{message.timestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
                   </tr>
                 </tbody>
               </table>
-            </tab>
-          </tabset>
-      </div>
+            </div>
+          </tab>
+        </tabset>
     </div>
   </div>
 
