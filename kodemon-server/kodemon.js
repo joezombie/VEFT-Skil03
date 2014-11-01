@@ -3,7 +3,8 @@ var dgram = require("dgram"),
     Message = require('./models').Message,
     express = require('express'),
     bodyParser = require('body-parser'),
-    elasticsearch = require('elasticsearch');
+    elasticsearch = require('elasticsearch'),
+    ejs = require('elastic.js');
 
 
 var server = dgram.createSocket("udp4");
@@ -83,6 +84,34 @@ app.get('/api/v1/key/:key', function(req, res){
             });
         }
     });
+});
+
+app.get('/api/v1/key/:key/getlast/:lastNr', function(req, res){
+    var key = req.params.key;
+    var lastNr = parseInt(req.params.lastNr);
+    
+    if(isNaN(lastNr)){
+        res.status(400).send('Incorrect request');
+    } else {
+        elClient.search({
+                index : key,
+                size : lastNr,
+                body : ejs.Request().sort('timestamp', 'desc')
+            }, 
+            function(err, response){
+                if(err){
+                    res.status(500).send('Something went wrong');
+                    console.log(err);
+                }else {                   
+                    responseArr = [];
+                    for (var i = 0, len = response.hits.hits.length; i < len; i++) {
+                        responseArr.push(response.hits.hits[i]._source);
+                    }
+                    res.json(responseArr);  
+                }
+            }
+        );
+    }
     
 });
 

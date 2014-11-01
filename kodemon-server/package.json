@@ -1,10 +1,11 @@
 {
   "name": "kodemon-server",
   "version": "0.0.0",
-  "description": "ERROR: No README data found!",
+  "description": "",
   "main": "kodemon.js",
   "dependencies": {
     "body-parser": "~1.9.2",
+    "elastic.js": "~1.2.0",
     "elasticsearch": "~2.4.3",
     "express": "~4.10.1",
     "mongoose": "~3.8.18"
