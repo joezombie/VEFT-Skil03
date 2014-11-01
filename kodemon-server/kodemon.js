@@ -52,9 +52,9 @@ app.use('/css/', express.static('./public/css'));
 app.use('/js/', express.static('./public/js'));
 
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 
 app.get('/api/v1/key/:key', function(req, res){
@@ -67,9 +67,11 @@ app.get('/api/v1/key/:key', function(req, res){
             console.log(err);
         }else {
             elClient.search({
-                "index" : key,
-                "size" : response.count,
-                "query" : {}
+                index : key,
+                size : response.count,
+                body : ejs.Request()
+                        .query(ejs.MatchAllQuery())
+                        .sort('timestamp', 'asc')
             }, function(err, response){
                 if(err){
                     res.status(500).send('Something went wrong');
@@ -95,10 +97,12 @@ app.get('/api/v1/key/:key/from/:from/take/:take', function(req, res){
         res.status(400).send('Incorrect request');
     } else {
         elClient.search({
-            "index" : key,
-            "size" : take,
-            "from" : from,
-            "query" : {}
+            index : key,
+            size : take,
+            from : from,
+            body : ejs.Request()
+                    .query(ejs.MatchAllQuery())
+                    .sort('timestamp', 'asc')
         }, function(err, response){
             if(err){
                 res.status(500).send('Something went wrong');
@@ -215,7 +219,7 @@ app.get('/api/v1/keys', function(req, res){
                 for (var i = 0, len = response.length; i < len; i++) {
                     responseArr.push(response[i].index);
                 }
-                res.json(responseArr);
+                res.json(responseArr.sort());
             }
         }
     );       

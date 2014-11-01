@@ -3,7 +3,8 @@
 // Declare app level module which depends on views, and components
 var myApp = angular.module('myApp', [
   'ngRoute',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'highcharts-ng'
 ]);
 
 myApp.controller('MenuCtrl', ['$scope', '$http', 'messageService',  function($scope, $http, messageService) {
@@ -52,6 +53,12 @@ myApp.controller('TableCtrl', ['$scope', 'messageService',
 	}
 ]);
 
+myApp.controller('GraphCtrl', ['$scope', 'graphService',
+	function($scope, graphService){
+		$scope.chartConfig = graphService.chartConfig;
+	}
+]);
+
 myApp.controller('FilterCtrl', ['$scope', 'messageService',
 	function($scope, messageService){
 		$scope.data = messageService.data;
@@ -59,7 +66,97 @@ myApp.controller('FilterCtrl', ['$scope', 'messageService',
 	}
 ]);
 
-myApp.service('messageService', function($http){
+myApp.service('graphService', function($http){
+	var key = '';
+	var intervalRef;
+	var chartConfig = {
+	         //This is not a highcharts object. It just looks a little like one!
+	         options: {
+	             //This is the Main Highcharts chart config. Any Highchart options are valid here.
+	             //will be ovverriden by values specified below.
+	             chart: {
+	                 type: 'area'
+	             },
+	             tooltip: {
+	                 style: {
+	                     padding: 10,
+	                     fontWeight: 'bold'
+	                 }
+	             }
+	         },
+
+	         //The below properties are watched separately for changes.
+
+	         //Series object (optional) - a list of series using normal highcharts series options.
+	         series: [{
+	             data: []
+	         }],
+	         //Title configuration (optional)
+	         title: {
+	             text: 'Title'
+	         },
+	         //Boolean to control showng loading status on chart (optional)
+	         loading: false,
+	         //Configuration for the xAxis (optional). Currently only one x axis can be dynamically controlled.
+	         //properties currentMin and currentMax provied 2-way binding to the chart's maximimum and minimum
+	         xAxis: {
+	          title: {text: 'Timestamp'}
+	         },
+	         yAxis: {
+	          title: {text: 'Execution time (ms)'}
+	         },
+	         //Whether to use HighStocks instead of HighCharts (optional). Defaults to false.
+	         useHighStocks: false,
+	         //size (optional) if left out the chart will default to size of the div or something sensible.
+	         //function (optional)
+	         func: function (chart) {
+	           //setup some logic for the chart
+	         }
+	    };
+
+
+    var updateChart = function(){
+    	$http.get('http://localhost:4001/api/v1/key/' + key + '/getlast/' + 100).
+		success(function(apiData, status, headers, config) {
+			var arr = [];
+			for(var i = 0; i < apiData.length; i++){
+				arr.push(apiData[i].execution_time);
+			}
+			setChartData(arr);
+		}).
+		error(function(data, status, headers, config) {
+		  	console.log('Could not fetch messages');
+		});
+    }
+    
+    var setKey = function(newKey){
+    	key = newKey;
+    }
+
+    var startLiveUpdate = function(){
+    	intervalRef = setInterval(updateChart, 1000);
+    }
+
+    var stopLiveUpdate = function (){
+    	clearInterval(intervalRef);
+    }
+
+	var setChartData = function(data){
+		chartConfig.series = [{data : data}];
+	}
+
+	return {
+		setChartData : setChartData,
+		updateChart : updateChart,
+		startLiveUpdate : startLiveUpdate,
+		stopLiveUpdate : stopLiveUpdate,
+		chartConfig : chartConfig,
+		setKey : setKey
+	};
+
+})
+
+myApp.service('messageService', function($http, graphService){
 	var data = {
 		key: 'No Key', 
 		messages: [],
@@ -68,13 +165,18 @@ myApp.service('messageService', function($http){
 		messagesFrom: 0,
 		currentPage: 1,
 		dateFrom: '',
-		dateTo: ''};
+		dateTo: '',
+	};
 
 	var setKey = function(newKey){
 		console.log('Setting key as', newKey);
 		data.key = newKey;
 		data.currentPage = 1;
 		fetchMessages();
+		graphService.setKey(data.key);
+		graphService.updateChart();
+		graphService.stopLiveUpdate();
+		graphService.startLiveUpdate();
 	};
 
 	var getKey = function(){
@@ -131,7 +233,7 @@ myApp.service('messageService', function($http){
 		fetchMessages();
 	}
 
-	return {
+	return {	
 		fetchMessages: fetchMessages,
 		setKey: setKey,
 		getKey: getKey,

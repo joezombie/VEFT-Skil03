@@ -70,6 +70,9 @@
         <tabset>
           <tab heading="Graph">
             <h1>Graph</h1>
+            <div ng-controller='GraphCtrl'>
+              <highchart id="chart1" config="chartConfig"></highchart>
+            </div>
           </tab>
           <tab heading="Table">
             <div ng-controller='TableCtrl'>
@@ -113,6 +116,8 @@
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
   <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="components/highcharts.js"></script>
+  <script src="components/highcharts-ng.js"></script>
   <script src="app.js"></script>
   <script src="components/version/version.js"></script>
   <script src="components/version/version-directive.js"></script>
