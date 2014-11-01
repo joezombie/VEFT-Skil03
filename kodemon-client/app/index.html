@@ -78,7 +78,7 @@
                 direction-links="false" 
                 boundary-links="true" 
                 total-items="data.totalMessages" 
-                items-per-page="data.totalMessagesSubSet" 
+                items-per-page="data.messagesTake" 
                 max-size="maxSize"
                 ng-change="pageChanged()"
                 num-pages="numPages"
@@ -93,7 +93,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr ng-repeat="message in data.messagesSubSet">
+                  <tr ng-repeat="message in data.messages">
                     <td>{{message.token}}</td>
                     <td>{{message.execution_time}}</td>
                     <td>{{message.timestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
