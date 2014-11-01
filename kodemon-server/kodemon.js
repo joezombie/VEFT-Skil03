@@ -11,6 +11,7 @@ var server = dgram.createSocket("udp4");
 server.on("message", function(msg, rinfo){
     data = JSON.parse(msg);
     data.timestamp = new Date(data.timestamp * 1000);
+    data.key = data.key.substring(data.key.lastIndexOf('\\')+1);
     console.log('got message from client: ');
     var message = new Message(data);
     message.save(function(err, b){
