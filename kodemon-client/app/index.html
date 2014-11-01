@@ -25,21 +25,21 @@
   <div class="container-fluid">
     <div class="row"></div>
     <div class="row">
-      <div class="col-md-2 col-md-offset-1">
+      <div class="col-md-2 col-md-offset-1 col-xs-3">
         <div ng-controller='MenuCtrl'>
           <ul class="nav nav-pills nav-stacked" role="tablist" ng-repeat="item in navItems">
-           <li role="presentation"><a ng-click="setKey(item.key)">{{item.key}}</a></li>
+           <li role="presentation" class="{{item.classes}}"><a ng-click="setKey(item.key)">{{item.key}}</a></li>
           </ul>
         </div>
       </div>
-      <div class="col-md-8">
+      <div class="col-md-8 col-xs-9">
         <div ng-controller='ViewCtrl'>
           <tabset>
             <tab heading="Graph">
               <h1>Graph</h1>
             </tab>
             <tab heading="Table">
-              <h1>{{key}}</h1>
+              <h1>{{data.key}}</h1>
               <table class="table table-condensed">
                 <thead>
                   <tr>
@@ -48,7 +48,7 @@
                     <th>Timestamp</th>
                   </tr>
                 </thead>
-                <tbody ng-repeat="message in messages">
+                <tbody ng-repeat="message in data.messages">
                   <tr>
                     <td>{{message.token}}</td>
                     <td>{{message.execution_time}}</td>
