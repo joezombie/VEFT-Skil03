@@ -190,8 +190,15 @@ app.post('/api/v1/keys/messages', function(req, res){
                     "key" : key        
                 }
             }, function(err, response){
-                console.log(err);            
-                res.json(response);
+                    if(err != null){
+                        console.log(err);            
+                    }
+                    var result = [];            
+                    for (var i = 0, len = response.hits.hits.length; i < len; i++) {                    
+                        result.push(response.hits.hits[i]._source);
+                    }
+
+                    res.json(result);
                 });
              });
     
@@ -206,24 +213,25 @@ app.post('/api/v1/keys/timerange', function(req, res){
     console.log('search_from: ' + search_from);
     console.log('search_to: ' + search_to);
     console.log('key:' + key);
-    
-    var result = mongoose.Message.find({"timestamp": {"$gte": search_from, "$lt": search_to}});
-    console.log(result);
-    res.json(result);
-
-/*
+   
     elClient.search({
-        "range" : {
-        "timestamp" : {
-            "gte" : search_from,
-            "lte" : search_to            
-        }
-    }
-    
+        index : key,
+        body : ejs.Request().query(
+             ejs.RangeQuery('timestamp')
+            .from(search_from)
+            .to(search_to))
+            .sort('timestamp', 'desc')        
     }, function(err, response){
-            console.log(err);
-            res.json(response);
-    });*/
+            if(err != null){
+                console.log('TimeRangeError: ' + err);
+            }
+            var result = [];            
+                for (var i = 0, len = response.hits.hits.length; i < len; i++) {                    
+                    result.push(response.hits.hits[i]._source);
+                }
+
+            res.json(result);
+    });
 });
 
 app.listen(4001, function(){
