@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="myApp" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>My AngularJS App</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/normalize.css">
+  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/main.css">
+  <link rel="stylesheet" href="bootstrap.css">
+  <link rel="stylesheet" href="app.css">
+  <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
+</head>
+<body>
+
+
+  <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+
+  <div class="container-fluid">
+    <div class="row"></div>
+    <div class="row">
+      <div class="col-md-2 col-md-offset-1">
+        <div ng-controller='MenuCtrl'>
+          <ul class="nav nav-pills nav-stacked" role="tablist" ng-repeat="item in navItems">
+           <li role="presentation"><a ng-click="setKey(item.key)">{{item.key}}</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div ng-controller='ViewCtrl'>
+          <tabset>
+            <tab heading="Graph">
+              <h1>Graph</h1>
+            </tab>
+            <tab heading="Table">
+              <h1>{{key}}</h1>
+              <table class="table table-condensed">
+                <thead>
+                  <tr>
+                    <th>Token</th>
+                    <th>Execution time</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody ng-repeat="message in messages">
+                  <tr>
+                    <td>{{message.token}}</td>
+                    <td>{{message.execution_time}}</td>
+                    <td>{{message.timestamp}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </tab>
+          </tabset>
+      </div>
+    </div>
+  </div>
+
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+  -->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="app.js"></script>
+  <script src="components/version/version.js"></script>
+  <script src="components/version/version-directive.js"></script>
+  <script src="components/version/interpolate-filter.js"></script>
+</body>
+</html>

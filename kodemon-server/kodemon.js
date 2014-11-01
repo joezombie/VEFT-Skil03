@@ -46,10 +46,15 @@ connectMongo();
 
 app = express();
 app.use( bodyParser.json() );
-
 app.use('/', express.static('./public'));
 app.use('/css/', express.static('./public/css'));
 app.use('/js/', express.static('./public/js'));
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.get('/api/v1/messages', function(req, res){
     Message.find({}, function(err, messages){
@@ -93,14 +98,60 @@ app.post('/api/v1/key/bytime', function(req, res){
     console.log('search_to: ' + search_to);
     console.log('key:' + key);
     
-     Message.find(key, function(err, messages){
-        if(err){
-            res.status(503).send('Unable to fetch messages');
-        } else  {
-            res.json(messages);
-        }
-    })
 
+    elClient.search({
+        "index" : key,
+        "query" : {            
+            "range" : {
+                "timestamp" : {
+                    "from" : search_from,
+                    "to" : search_to
+                }
+            }
+        }
+    }, function(err, response){
+            console.log(err);
+            res.json(response);
+    });
+});
+
+
+
+app.get('/api/v1/keys', function(req, res){  
+    elClient.cat.indices({format:'json'},
+        function(err, response){
+            console.log(err);
+            res.json(response);
+        }
+    );       
+});
+
+app.post('/api/v1/keys/messages', function(req, res){
+    
+    var key = req.body.key;    
+    console.log('key:' + key);    
+
+    var count;
+    elClient.count({
+        "index" : key,        
+        "query" : {                 
+            "key" : key        
+        }
+        }, function (error, response) {
+            count = response.count;
+            
+            elClient.search({  
+                "size" : count,      
+                "index" : key,        
+                "query" : {                 
+                    "key" : key        
+                }
+            }, function(err, response){
+                console.log(err);            
+                res.json(response);
+                });
+             });
+    
 });
 
 app.listen(4001, function(){
