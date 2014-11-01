@@ -15,7 +15,7 @@ myApp.controller('MenuCtrl', ['$scope', '$http', 'messageService',  function($sc
 		success(function(data, status, headers, config) {	
 			angular.forEach(data, function(value, key) {
 			  this.push({
-					key: value.index,
+					key: value,
 					classes: ''
 				});	
 			}, $scope.navItems);

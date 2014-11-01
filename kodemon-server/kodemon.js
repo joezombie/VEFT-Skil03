@@ -56,28 +56,34 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.get('/api/v1/messages', function(req, res){
-    Message.find({}, function(err, messages){
-        if(err){
-            res.status(503).send('Unable to fetch messages');
-        } else  {
-            res.json(messages);
-        }
-    })
-});
-
-
 app.get('/api/v1/key/:key', function(req, res){
     var key = req.params.key;
-    Message.find({key: key}, function(err, b){
-        if(err){
-            res.status(500).send('Try again later');
-        }else if(!b){
-            res.status(404).send('No entry found');
-        } else {
-            res.json(b);
+    elClient.count({
+        index: key
+    }, function (err, response) {
+      if(err){
+            res.status(500).send('Something went wrong');
+            console.log(err);
+        }else {
+            elClient.search({
+                "index" : key,
+                "size" : response.count,
+                "query" : {}
+            }, function(err, response){
+                if(err){
+                    res.status(500).send('Something went wrong');
+                    console.log(err);
+                }else {                   
+                    responseArr = [];
+                    for (var i = 0, len = response.hits.hits.length; i < len; i++) {
+                        responseArr.push(response.hits.hits[i]._source);
+                    }
+                    res.json(responseArr);  
+                }
+            });
         }
     });
+    
 });
 
 // API: http://localhost:4001/api/v1/key/bytime
@@ -120,8 +126,16 @@ app.post('/api/v1/key/bytime', function(req, res){
 app.get('/api/v1/keys', function(req, res){  
     elClient.cat.indices({format:'json'},
         function(err, response){
-            console.log(err);
-            res.json(response);
+            if(err){
+                console.log(err);
+                res.status(500).send('Something went wrong ');
+            }else {
+                responseArr = [];
+                for (var i = 0, len = response.length; i < len; i++) {
+                    responseArr.push(response[i].index);
+                }
+                res.json(responseArr);
+            }
         }
     );       
 });
