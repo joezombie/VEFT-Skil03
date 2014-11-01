@@ -154,6 +154,35 @@ app.post('/api/v1/keys/messages', function(req, res){
     
 });
 
+app.post('/api/v1/keys/timerange', function(req, res){
+    
+    var search_from = req.body.from || "";
+    var search_to   = req.body.to || "";
+    var key         = req.body.key || "";
+    
+    console.log('search_from: ' + search_from);
+    console.log('search_to: ' + search_to);
+    console.log('key:' + key);
+    
+    var result = mongoose.Message.find({"timestamp": {"$gte": search_from, "$lt": search_to}});
+    console.log(result);
+    res.json(result);
+
+/*
+    elClient.search({
+        "range" : {
+        "timestamp" : {
+            "gte" : search_from,
+            "lte" : search_to            
+        }
+    }
+    
+    }, function(err, response){
+            console.log(err);
+            res.json(response);
+    });*/
+});
+
 app.listen(4001, function(){
     console.log('REST API ready');
 });
