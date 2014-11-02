@@ -281,28 +281,41 @@ app.post('/api/v1/keys/timerange', function(req, res){
     
     if(search_from != "" && search_to != "" && key != "")
     {
-
-        elClient.search({
+        elClient.count({
             index : key,
             body : ejs.Request().query(
                  ejs.RangeQuery('timestamp')
                 .from(search_from)
                 .to(search_to))
-                .sort('timestamp', 'desc')        
         }, function(err, response){
-                if(err != null){
-                    console.log('TimeRangeError: ' + err);
-                }
-                var result = [];            
-                    for (var i = 0, len = response.hits.hits.length; i < len; i++) {                    
-                        result.push(response.hits.hits[i]._source);
-                    }
+            if(err){
+                res.status(500).send('Something went wrong');
+                console.log(err);
+            }else {  
+                elClient.search({
+                            index : key,
+                            size : response.count,
+                            body : ejs.Request().query(
+                                 ejs.RangeQuery('timestamp')
+                                .from(search_from)
+                                .to(search_to))
+                                .sort('timestamp', 'desc')        
+                        }, function(err, response){
+                                if(err != null){
+                                    console.log('TimeRangeError: ' + err);
+                                }
+                                var result = [];            
+                                    for (var i = 0, len = response.hits.hits.length; i < len; i++) {                    
+                                        result.push(response.hits.hits[i]._source);
+                                    }
 
-                res.json(result);
+                                res.json(result);
+                        });
+            }
         });
-    }else{
-        res.json(null);
-    }
+    } else {
+        res.status(400).send('Bad request');
+    } 
     
 });
 
