@@ -7,19 +7,19 @@
     "resources": {
         "Kodemon methods": {
             "methods": {
-                "keys": {
+                "Keys": {
                     "description": "This method returns list of all keys",
                     "httpMethod": "GET",
-                    "name": "keys",
+                    "name": "GetKeys",
                     "parameters": {
                         
                     },
                     "path": "/keys"
                 },
-                "key": {
+                "Key": {
                     "description": "This method returns all messages for given key",
                     "httpMethod": "GET",
-                    "name": "key",
+                    "name": "GetMessages",
                     "parameters": {
                         "key": {
                             "default": "test.py-test",
@@ -34,7 +34,7 @@
                 "KeyFromTake": {
                     "description": "This method allows you to retrieve fixed amount of messages for given key from given position",
                     "httpMethod": "GET",
-                    "name": "keyfromtake",
+                    "name": "GetKeyMessagesTake",
                     "parameters": {
                         "key": {
                             "default": "test.py-test",
@@ -60,7 +60,7 @@
                 "Count": {
                     "description": "This method returns messages count for key",
                     "httpMethod": "GET",
-                    "name": "count",
+                    "name": "GetKeyMessagesCount",
                     "parameters": {
                         "key": {
                             "default": "test.py-test",
@@ -75,7 +75,7 @@
                 "GetLastNr": {
                     "description": "This method returns last messages for key with given number",
                     "httpMethod": "GET",
-                    "name": "getlast",
+                    "name": "GetLastMessages",
                     "parameters": {
                         "key": {
                             "default": "test.py-test",
@@ -97,7 +97,7 @@
                 "KeysTimeRange": {
                     "description": "This method returns last messages for key with given number",
                     "httpMethod": "POST",
-                    "name": "keystimerange",
+                    "name": "KeysByTimeRange",
 
                     "parameters": {
                         "Content-Type": {
