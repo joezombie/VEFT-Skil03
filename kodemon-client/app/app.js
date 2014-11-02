@@ -56,6 +56,7 @@ myApp.controller('FilterCtrl', ['$scope', 'messageService',
 	function($scope, messageService){
 		$scope.data = messageService.data;
 		$scope.filter = messageService.filter;
+
 	}
 ]);
 
@@ -83,18 +84,20 @@ myApp.service('messageService', function($http){
 
 	var filter = function(){
 		console.log('Getting messages');
-		$http.post('http://localhost:4001/api/v1/key/bytime',
+		$http.post('http://localhost:4001/api/v1/keys/timerange',
 			{
 				from: data.dateFrom,
 				to: data.dateTo,
 				key: data.key
 			}).
 		success(function(apiData, status, headers, config) {
+			
 			if(status = 200){	
 				data.messages = apiData;
 				data.messagesSubSet = data.messages.slice(0, 100);
 				data.totalMessages = data.messages.length;
-				console.log('Got messages');
+				console.log(apiData);
+				console.log('Got messages');				
 			}else {
 				console.log(data);
 			}

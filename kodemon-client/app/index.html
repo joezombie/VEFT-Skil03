@@ -89,6 +89,8 @@
                   <tr>
                     <th>Token</th>
                     <th>Execution time</th>
+                    <th>Date</th>
+                    <th>Time</th>
                     <th>Timestamp</th>
                   </tr>
                 </thead>
@@ -96,7 +98,9 @@
                   <tr ng-repeat="message in data.messages">
                     <td>{{message.token}}</td>
                     <td>{{message.execution_time}}</td>
-                    <td>{{message.timestamp | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                    <td>{{message.timestamp.split('T')[0]}}</td>
+                    <td>{{message.timestamp.split('T')[1].slice(0,-5)}}</td>
+                    <td>{{message.timestamp.replace('T', ' ').slice(0,-5)}}
                   </tr>
                 </tbody>
               </table>

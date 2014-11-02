@@ -265,25 +265,30 @@ app.post('/api/v1/keys/timerange', function(req, res){
     console.log('search_from: ' + search_from);
     console.log('search_to: ' + search_to);
     console.log('key:' + key);
-   
-    elClient.search({
-        index : key,
-        body : ejs.Request().query(
-             ejs.RangeQuery('timestamp')
-            .from(search_from)
-            .to(search_to))
-            .sort('timestamp', 'desc')        
-    }, function(err, response){
-            if(err != null){
-                console.log('TimeRangeError: ' + err);
-            }
-            var result = [];            
-                for (var i = 0, len = response.hits.hits.length; i < len; i++) {                    
-                    result.push(response.hits.hits[i]._source);
-                }
+    
+    if(search_from != "" && search_to != "" && key != "")
+    {
 
-            res.json(result);
-    });
+        elClient.search({
+            index : key,
+            body : ejs.Request().query(
+                 ejs.RangeQuery('timestamp')
+                .from(search_from)
+                .to(search_to))
+                .sort('timestamp', 'desc')        
+        }, function(err, response){
+                if(err != null){
+                    console.log('TimeRangeError: ' + err);
+                }
+                var result = [];            
+                    for (var i = 0, len = response.hits.hits.length; i < len; i++) {                    
+                        result.push(response.hits.hits[i]._source);
+                    }
+
+                res.json(result);
+        });
+    }
+    
 });
 
 app.listen(4001, function(){
