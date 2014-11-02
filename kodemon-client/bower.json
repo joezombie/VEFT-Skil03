@@ -1,15 +1,28 @@
 {
-  "name": "angular-seed",
-  "description": "A starter project for AngularJS",
+  "name": "kodemon-client",
   "version": "0.0.0",
-  "homepage": "https://github.com/angular/angular-seed",
+  "homepage": "https://github.com/joezombie/VEFT-Skil03",
+  "authors": [
+    "Joi",
+    "Gunnar",
+    "Carsten"
+  ],
   "license": "MIT",
   "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ],
   "dependencies": {
-    "angular": "1.2.x",
     "angular-route": "1.2.x",
     "angular-loader": "1.2.x",
     "angular-mocks": "~1.2.x",
+    "angular-bootstrap": "~0.11.2",
+    "bootstrap": "~3.3.0",
     "html5-boilerplate": "~4.3.0"
   }
 }
