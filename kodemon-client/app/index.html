@@ -35,38 +35,6 @@
           </div>
         </div>
       <div class="col-md-8 col-xs-9">
-        <form name="dateFilter" ng-controller="FilterCtrl" class="form-inline" role="form">
-          <div class="form-group">
-            <label for="dateFrom">From: </label>
-            <input 
-              type="datetime-local" 
-              class="form-control"
-              id="dateFrom" 
-              name="dateFrom" 
-              ng-model="data.dateFrom"
-              placeholder="yyyy-MM-ddTHH:mm:ss" 
-              required />
-          </div>
-          <div class="form-group">
-            <label for="dateTo">To: </label>
-            <input 
-              type="datetime-local" 
-              class="form-control"
-              id="dateTo" 
-              name="dateTo" 
-              ng-model="data.dateTo"
-              placeholder="yyyy-MM-ddTHH:mm:ss" 
-              required />
-          </div>
-          <div class="form-group">
-            <button 
-              type="button" 
-              class="btn btn-primary" 
-              ng-click="filter()">
-              Filter
-            </button>
-          </div>
-        </form>
         <tabset>
           <tab heading="Graph">
             <h1>Graph</h1>
@@ -75,8 +43,46 @@
             </div>
           </tab>
           <tab heading="Table">
+            <h1>{{data.key}}</h1>
+            <form name="dateFilter" ng-controller="FilterCtrl" class="form-inline" role="form">
+              <div class="form-group">
+                <label for="dateFrom">From: </label>
+                <input 
+                  type="datetime-local" 
+                  class="form-control"
+                  id="dateFrom" 
+                  name="dateFrom" 
+                  ng-model="data.dateFrom"
+                  placeholder="yyyy-MM-ddTHH:mm:ss" 
+                  required />
+              </div>
+              <div class="form-group">
+                <label for="dateTo">To: </label>
+                <input 
+                  type="datetime-local" 
+                  class="form-control"
+                  id="dateTo" 
+                  name="dateTo" 
+                  ng-model="data.dateTo"
+                  placeholder="yyyy-MM-ddTHH:mm:ss" 
+                  required />
+              </div>
+              <div class="form-group">
+                <button 
+                  type="button" 
+                  class="btn btn-primary" 
+                  ng-click="filter()">
+                  Filter
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary" 
+                  ng-click="disableFilter()">
+                  Disable Filter
+                </button>
+              </div>
+            </form>
             <div ng-controller='TableCtrl'>
-              <h1>{{data.key}}</h1>
               <pagination 
                 direction-links="false" 
                 boundary-links="true" 

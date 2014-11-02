@@ -307,7 +307,7 @@ app.post('/api/v1/keys/timerange', function(req, res){
                                  ejs.RangeQuery('timestamp')
                                 .from(search_from)
                                 .to(search_to))
-                                .sort('timestamp', 'desc')        
+                                .sort('timestamp', 'asc')        
                         }, function(err, response){
                                 if(err != null){
                                     console.log('TimeRangeError: ' + err);
