@@ -27,7 +27,7 @@ messageSchema.pre('save', function(next){
 
 messageSchema.post('save', function(b) {
     client.index({
-        index: b.key,
+        index: b.key.toLowerCase(),
         type: 'message',
         id: String(b._id),
         body: b},

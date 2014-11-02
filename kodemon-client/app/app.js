@@ -63,6 +63,7 @@ myApp.controller('FilterCtrl', ['$scope', 'messageService',
 	function($scope, messageService){
 		$scope.data = messageService.data;
 		$scope.filter = messageService.filter;
+		$scope.disableFilter = messageService.disableFilter;
 
 	}
 ]);
@@ -121,15 +122,18 @@ myApp.service('graphService', function($http){
     var updateChart = function(){
     	var lastMessage = chartConfig.series[0].data[chartConfig.series[0].data.length - 1];
 
+    	var fromDate = new Date(lastMessage[0]);
+    	fromDate.setMilliseconds(fromDate.getMilliseconds() + 1);
+
 		$http.post('http://localhost:4001/api/v1/keys/timerange',
 			{
-				from: lastMessage[0],
+				from: fromDate,
 				to: new Date(),
 				key: key
 			}).
 		success(function(apiData, status, headers, config) {			
 			if(status = 200){	
-				for(var i =  apiData.length -1; i >=0 ; i--){	
+				for(var i = 0; i < apiData.length ; i++){	
 					console.log(new Date(apiData[i].timestamp).getTime());			
 					addPoint([
 						new Date(apiData[i].timestamp).getTime(),
@@ -148,7 +152,9 @@ myApp.service('graphService', function($http){
     }
 
     var addPoint = function (point){
-    	chartConfig.series[0].data.splice(0, 1);
+    	if(chartConfig.series[0].data.length > 100){
+    		chartConfig.series[0].data.splice(0, 1);
+    	}
     	chartConfig.series[0].data.push(point);
     }
     
@@ -201,7 +207,12 @@ myApp.service('messageService', function($http, graphService){
 		dateTo: '',
 	};
 
+	var filterData = [];
+
+	var isFiltering = false;
+
 	var setKey = function(newKey){
+		isFiltering = false;
 		console.log('Setting key as', newKey);
 		data.key = newKey;
 		data.currentPage = 1;
@@ -216,19 +227,21 @@ myApp.service('messageService', function($http, graphService){
 	};
 
 	var filter = function(){
+		isFiltering = true;
+		data.currentPage = 1;
 		console.log('Getting messages');
 		$http.post('http://localhost:4001/api/v1/keys/timerange',
 			{
-				from: data.dateFrom,
-				to: data.dateTo,
+				from: new Date(data.dateFrom),
+				to: new Date(data.dateTo),
 				key: data.key
 			}).
 		success(function(apiData, status, headers, config) {
 			
 			if(status = 200){	
-				data.messages = apiData;
-				data.messagesSubSet = data.messages.slice(0, 100);
-				data.totalMessages = data.messages.length;
+				filterData = apiData;
+				data.messages = filterData.slice(0, 100);
+				data.totalMessages = filterData.length;
 				console.log(apiData);
 				console.log('Got messages');				
 			}else {
@@ -239,6 +252,12 @@ myApp.service('messageService', function($http, graphService){
 		  console.log('Could not fetch messages');
 		});	
 	};
+
+	var disableFilter = function(){
+		isFiltering = false;
+		data.currentPage = 1;
+		fetchMessages();
+	}
 
 	var fetchMessages = function(){
 		console.log('Getting messages');
@@ -263,8 +282,12 @@ myApp.service('messageService', function($http, graphService){
 	};
 
 	var pageChanged = function(){
-		data.messagesFrom = (data.currentPage - 1) * data.messagesTake;
-		fetchMessages();
+		if(isFiltering){
+			data.messages = filterData.slice((data.currentPage - 1) * data.messagesTake, data.currentPage * 100);
+		} else {
+			data.messages = (data.currentPage - 1) * data.messagesTake;
+			fetchMessages();
+		}
 	}
 
 	return {	
@@ -273,6 +296,7 @@ myApp.service('messageService', function($http, graphService){
 		getKey: getKey,
 		pageChanged: pageChanged,
 		filter: filter,
+		disableFilter: disableFilter,
 		data: data
 	};
 });
