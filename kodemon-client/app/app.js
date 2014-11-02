@@ -76,7 +76,8 @@ myApp.service('graphService', function($http){
 	             //This is the Main Highcharts chart config. Any Highchart options are valid here.
 	             //will be ovverriden by values specified below.
 	             chart: {
-	                 type: 'area'
+	                 type: 'column',
+	                 animation : false
 	             },
 	             tooltip: {
 	                 style: {
@@ -101,7 +102,9 @@ myApp.service('graphService', function($http){
 	         //Configuration for the xAxis (optional). Currently only one x axis can be dynamically controlled.
 	         //properties currentMin and currentMax provied 2-way binding to the chart's maximimum and minimum
 	         xAxis: {
-	          title: {text: 'Timestamp'}
+              	type: 'datetime',
+          		title: {text: 'Timestamp'},
+          		floor : 0
 	         },
 	         yAxis: {
 	          title: {text: 'Execution time (ms)'}
@@ -115,27 +118,57 @@ myApp.service('graphService', function($http){
 	         }
 	    };
 
-
     var updateChart = function(){
-    	$http.get('http://localhost:4001/api/v1/key/' + key + '/getlast/' + 100).
-		success(function(apiData, status, headers, config) {
-			var arr = [];
-			for(var i = 0; i < apiData.length; i++){
-				arr.push(apiData[i].execution_time);
+    	var lastMessage = chartConfig.series[0].data[chartConfig.series[0].data.length - 1];
+
+		$http.post('http://localhost:4001/api/v1/keys/timerange',
+			{
+				from: lastMessage[0],
+				to: new Date(),
+				key: key
+			}).
+		success(function(apiData, status, headers, config) {			
+			if(status = 200){	
+				for(var i =  apiData.length -1; i >=0 ; i--){	
+					console.log(new Date(apiData[i].timestamp).getTime());			
+					addPoint([
+						new Date(apiData[i].timestamp).getTime(),
+						apiData[i].execution_time]);
+				};
+				//chartConfig.series[0].data = newSeries;
+				
+			}else {
+				console.log(data);
 			}
-			setChartData(arr);
 		}).
 		error(function(data, status, headers, config) {
-		  	console.log('Could not fetch messages');
-		});
+		  console.log('Could not fetch messages');
+		});	
+
+    }
+
+    var addPoint = function (point){
+    	chartConfig.series[0].data.splice(0, 1);
+    	chartConfig.series[0].data.push(point);
     }
     
     var setKey = function(newKey){
     	key = newKey;
+    	chartConfig.title.text=newKey;
     }
 
     var startLiveUpdate = function(){
-    	intervalRef = setInterval(updateChart, 1000);
+    	$http.get('http://localhost:4001/api/v1/key/' + key + '/getlast/' + 100).
+		success(function(apiData, status, headers, config) {
+			chartConfig.series[0].data.length = 0; 
+			for(var i =  apiData.length -1; i >=0 ; i--){				
+				chartConfig.series[0].data.push([new Date(apiData[i].timestamp).getTime(), apiData[i].execution_time]);
+			};
+			intervalRef = setInterval(updateChart, 1000);
+		}).
+		error(function(data, status, headers, config) {
+		  	console.log('Could not fetch messages');
+		});
     }
 
     var stopLiveUpdate = function (){
@@ -148,7 +181,6 @@ myApp.service('graphService', function($http){
 
 	return {
 		setChartData : setChartData,
-		updateChart : updateChart,
 		startLiveUpdate : startLiveUpdate,
 		stopLiveUpdate : stopLiveUpdate,
 		chartConfig : chartConfig,
@@ -175,7 +207,6 @@ myApp.service('messageService', function($http, graphService){
 		data.currentPage = 1;
 		fetchMessages();
 		graphService.setKey(data.key);
-		graphService.updateChart();
 		graphService.stopLiveUpdate();
 		graphService.startLiveUpdate();
 	};
