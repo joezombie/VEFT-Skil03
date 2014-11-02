@@ -76,7 +76,7 @@ myApp.service('graphService', function($http){
 	             //This is the Main Highcharts chart config. Any Highchart options are valid here.
 	             //will be ovverriden by values specified below.
 	             chart: {
-	                 type: 'scatter',
+	                 type: 'column',
 	                 animation : false
 	             },
 	             tooltip: {
