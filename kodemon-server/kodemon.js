@@ -260,6 +260,15 @@ app.post('/api/v1/keys/messages', function(req, res){
     
 });
 
+
+// API: http://localhost:4001/api/v1/keys/timerange
+// return records for given keyvalue in time range provided in body
+// BODY: 
+// {      
+//       "from": "2014-10-30T20:08:07.000Z",
+//       "to": "2014-10-30T20:08:07.000Z",
+//       "key": "test.py-test"
+//   }
 app.post('/api/v1/keys/timerange', function(req, res){
     
     var search_from = req.body.from || "";
@@ -291,6 +300,8 @@ app.post('/api/v1/keys/timerange', function(req, res){
 
                 res.json(result);
         });
+    }else{
+        res.json(null);
     }
     
 });
