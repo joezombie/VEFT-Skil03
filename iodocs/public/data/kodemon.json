@@ -5,7 +5,7 @@
     "publicPath": "/api/v1",
     "version": "1.0",
     "resources": {
-        "Identity Methods": {
+        "Kodemon methods": {
             "methods": {
                 "keys": {
                     "description": "This method returns list of all keys",
@@ -93,72 +93,46 @@
                         }
                     },
                     "path": "/key/{key}/getlast/{lastNr}"
-                }
-            }
-        },
-        "User Methods": {
-            "methods": {
-                "Influence": {
-                    "description": "This method allows you to retrieve a user's influencers and influencees.",
-                    "httpMethod": "GET",
-                    "name": "Influence",
-                    "parameters": {
-                        "kloutId": {
-                            "default": "635263",
-                            "description": "A kloutId (like 635263)",
-                            "location": "path",
-                            "required": true,
-                            "type": "string"
-                        }
-                    },
-                    "path": "/user.json/{kloutId}/influence"
                 },
-                "Score": {
-                    "description": "This method allows you to retrieve a user's Klout Score and deltas.",
-                    "httpMethod": "GET",
-                    "name": "Score",
+                "KeysTimeRange": {
+                    "description": "This method returns last messages for key with given number",
+                    "httpMethod": "POST",
+                    "name": "keystimerange",
+
                     "parameters": {
-                        "kloutId": {
-                            "default": "635263",
-                            "description": "A kloutId (like 635263)",
-                            "location": "path",
+                        "Content-Type": {
+                            "type": "string",
+                            "required": "true",
+                            "description": "Content type of the payload",
+                            "default": "application/json",
+                            "location": "header"
+                        },
+                        "key": {
+                            "default": "test.py-test",
+                            "description": "A key identity",
+                            "location": "body",
                             "required": true,
                             "type": "string"
-                        }
-                    },
-                    "path": "/user.json/{kloutId}/score"
-                },
-                "ShowUser": {
-                    "description": "This method allows you to retrieve a user.",
-                    "httpMethod": "GET",
-                    "name": "Show User",
-                    "parameters": {
-                        "kloutId": {
-                            "default": "635263",
-                            "description": "A kloutId (like 635263)",
-                            "location": "path",
+                        },
+                        "from" : {
+                            "default": "2014-10-30T21:04:54.000Z",
+                            "description": "Timestamp from",
+                            "location": "body",
                             "required": true,
-                            "type": "string"
-                        }
-                    },
-                    "path": "/user.json/{kloutId}"
-                },
-                "Topics": {
-                    "description": "This method allows you to retrieve a user's topics.",
-                    "httpMethod": "GET",
-                    "name": "Topics",
-                    "parameters": {
-                        "kloutId": {
-                            "default": "635263",
-                            "description": "A kloutId (like 635263)",
-                            "location": "path",
+                            "type": "string"  
+                        },
+                        "to" : {
+                            "default": "2014-10-30T21:10:54.000Z",
+                            "description": "Timestamp to",
+                            "location": "body",
                             "required": true,
-                            "type": "string"
+                            "type": "string"  
                         }
                     },
-                    "path": "/user.json/{kloutId}/topics"
+                    "path": "/keys/timerange"
                 }
             }
         }
+        
     }
 }
