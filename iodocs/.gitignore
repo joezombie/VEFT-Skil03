@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/*
+config.json
+logs/*
+pids/*
+
+# Ignore project files
+.idea/*
+*.iml

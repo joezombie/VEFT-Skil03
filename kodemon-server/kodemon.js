@@ -261,14 +261,22 @@ app.post('/api/v1/keys/messages', function(req, res){
 });
 
 
-// API: http://localhost:4001/api/v1/keys/timerange
-// return records for given keyvalue in time range provided in body
-// BODY: 
-// {      
-//       "from": "2014-10-30T20:08:07.000Z",
-//       "to": "2014-10-30T20:08:07.000Z",
-//       "key": "test.py-test"
-//   }
+/* API: http://localhost:4001/api/v1/keys/timerange
+* return records for given keyvalue in time range provided in body
+* BODY: 
+* {      
+*       "from": "2014-10-30T20:08:07.000Z",
+*       "to": "2014-10-30T20:08:07.000Z",
+*       "key": "test.py-test"
+*   }
+*/
+/**
+ * Represents a book.
+ * @constructor
+ * @param {string} title - The title of the book.
+ * @param {string} author - The author of the book.
+ */
+ 
 app.post('/api/v1/keys/timerange', function(req, res){
     
     var search_from = req.body.from || "";
@@ -322,3 +330,7 @@ app.post('/api/v1/keys/timerange', function(req, res){
 app.listen(4001, function(){
     console.log('REST API ready');
 });
+
+/** This is a description of the foo function. */
+function foo() {
+}
